@@ -9,13 +9,13 @@ A Python project comparing the return and risk of **Indian and global beauty & f
 How do Indian consumer-brand stocks (Honasa/Mamaearth, Nykaa, Trent) compare with global beauty and fashion leaders (e.l.f. Beauty, Estée Lauder, Coty, Tapestry, L'Oréal, LVMH) on return, risk and diversification?
 
 ## Data
-- Daily adjusted closing prices from Yahoo Finance (via `yfinance`), **8 Nov 2023 to 5 Nov 2026**. The start date is the first full trading day after Honasa listed.
+- Daily adjusted closing prices from Yahoo Finance (via `yfinance`), **8 Nov 2023 to 5 Nov 2026** (closing prices, fixed end date so results are reproducible), with automatic data-quality checks and a split-error correction. The start date is the first full trading day after Honasa listed.
 - All prices converted to **US dollars** using USD/INR and EUR/USD exchange rates, the view of a US-based investor.
 - Benchmarks: S&P 500 and Nifty 50.
 - Risk-free rate: 4.98% (US 10-year Treasury, Federal Reserve H.15, 29 Oct 2026).
 
 ## Method
-1. Download prices and exchange rates; fill exchange-holiday gaps; convert to US$.
+1. Download prices and exchange rates; run data-quality checks (missing data, gaps, moves above 25%, exchange-rate ranges, split errors); fill exchange-holiday gaps; convert to US$.
 2. Calculate daily returns.
 3. For each stock: annual return (CAGR), annual volatility, Sharpe ratio and maximum drawdown.
 4. Correlation heatmap to measure diversification within India, within global, and across the two.
@@ -23,23 +23,24 @@ How do Indian consumer-brand stocks (Honasa/Mamaearth, Nykaa, Trent) compare wit
 6. Overfitting test: Deflated Sharpe Ratio (Bailey & López de Prado, 2014) to check whether the best of 10,000 portfolios beats what luck alone would produce.
 
 ## Key findings
-Period: 8 Nov 2023 to 5 Nov 2026, in US dollars (5 Nov prices for US stocks were taken during the trading day).
+Period: 8 Nov 2023 to 5 Nov 2026 (closing prices), in US dollars.
 
-1. **Only one of nine stocks beat the market after adjusting for risk.** Tapestry (Coach, Kate Spade) returned **70.2% a year** with a Sharpe ratio of **1.67**, vs **0.91** for the S&P 500. The other eight gave less return per unit of risk than simply buying the index.
-2. **e.l.f. Beauty was the riskiest stock: 63% volatility and a 77% fall from its peak**, for just 4.2% a year. This matches my e.l.f. valuation project, where 91% of FY26 growth came from an acquisition and the core business grew 2%.
-3. **Nykaa was the best Indian stock** (26.4% a year, Sharpe 0.69). Honasa (9.5%) and Trent (3.1%) carried high risk (42–44% volatility) and deep falls (Honasa −64%, Trent −76%). Coty was the worst: −25.5% a year and an 86% fall.
-4. **Combining India and global stocks cut risk by about a quarter.** Indian stocks barely moved with global ones (average daily correlation **0.03**, vs **0.31** among global stocks and **0.18** among Indian stocks). An equal-weight mix of all nine had **20.8% volatility and a 33% worst fall**, vs 26.4% and 46% for India alone and 27.7% and 45% for global alone.
-5. **The "optimised" portfolio looks great only with hindsight.** The best of 10,000 random mixes earned 32.9% a year (Sharpe 1.30), but it put 35% in Tapestry, the stock that had already done best. Its weights are chosen using the same data they are tested on.
-6. **Currency matters.** In US dollars the Nifty 50 returned 3.5% a year vs 18.5% for the S&P 500, partly because the rupee weakened against the dollar.
-7. **The best portfolio may be luck.** Its Sharpe ratio (1.20 on daily excess returns) beats the 0.79 that luck alone would produce from 10,000 tries, but the **Deflated Sharpe Ratio is only 77%**, below the 95% standard. Had I tested just one portfolio, the probability would be 98%; testing 10,000 pushes it down. So I cannot claim the "optimised" mix would keep outperforming.
+1. **Only one of nine stocks beat the market after adjusting for risk.** Tapestry (Coach, Kate Spade) returned **70.5% a year** with a Sharpe ratio of **1.68**, vs **0.89** for the S&P 500. The other eight gave less return per unit of risk than simply buying the index.
+2. **e.l.f. Beauty was the riskiest stock: 63% volatility and a 77% fall from its peak**, for just 3.7% a year. This matches my e.l.f. valuation project, where 91% of FY26 growth came from an acquisition and the core business grew 2%.
+3. **Indian stocks did better than global ones.** Nykaa returned 26.4% a year (Sharpe 0.69) and Trent 17.5% (Sharpe 0.34); Honasa managed 8.0% with high risk (44% volatility, a 64% fall). The equal-weight India portfolio returned **21.6% a year vs 9.1%** for global. Coty was the worst stock: -26.2% a year and an 86% fall.
+4. **Combining India and global stocks cut risk by about a fifth.** Indian stocks barely moved with global ones (average daily correlation **0.03**, vs **0.31** among global stocks and **0.19** among Indian stocks). An equal-weight mix of all nine had **20.7% volatility and a 33% worst fall**, vs 25.6% and 43% for India alone and 27.6% and 45% for global alone.
+5. **The "optimised" portfolio looks great only with hindsight.** The best of 10,000 random mixes earned 30.7% a year (Sharpe 1.37), using L'Oréal 24%, Tapestry 23%, Nykaa 22% and Trent 18%. Its weights are chosen using the same data they are tested on.
+6. **That best portfolio may be luck.** Its Sharpe ratio (1.26 on daily excess returns) beats the 0.82 that luck alone would produce from 10,000 tries, but the **Deflated Sharpe Ratio is only 78%**, below the 95% standard. With one try it would be 99%.
+7. **Currency matters.** In US dollars the Nifty 50 returned 3.5% a year vs 18.2% for the S&P 500, partly because the rupee weakened against the dollar.
+8. **Data checks caught a Yahoo Finance error.** Yahoo applied Trent's 1.5-for-1 stock split from 1 Jan 2026, creating a fake -33% day (exactly 1 / 1.5). I confirmed it against reported prices (real close ₹4,430 on 5 Jan 2026 vs Yahoo's ₹2,953 = ₹4,430 / 1.5) and the notebook now corrects such errors automatically. Before the fix, Trent wrongly showed +3.1% a year.
 
 | Portfolio | Annual return | Volatility | Sharpe | Worst fall |
 |---|---|---|---|---|
-| Equal-weight India | 17.6% | 26.4% | 0.48 | −46.0% |
-| Equal-weight Global | 9.6% | 27.7% | 0.17 | −45.4% |
-| **Equal-weight All (India + Global)** | **14.0%** | **20.8%** | **0.43** | **−33.3%** |
-| Optimised (max Sharpe, in-sample) | 32.9% | 21.5% | 1.30 | −18.7% |
-| Minimum risk | 18.1% | 17.5% | 0.75 | −25.1% |
+| Equal-weight India | 21.6% | 25.6% | 0.65 | -42.5% |
+| Equal-weight Global | 9.1% | 27.6% | 0.15 | -45.4% |
+| **Equal-weight All (India + Global)** | **14.9%** | **20.7%** | **0.48** | **-33.3%** |
+| Optimised (max Sharpe, in-sample) | 30.7% | 18.7% | 1.37 | -17.9% |
+| Minimum risk | 18.0% | 17.3% | 0.75 | -25.4% |
 
 ## Charts
 | | |
@@ -57,7 +58,7 @@ Period: 8 Nov 2023 to 5 Nov 2026, in US dollars (5 Nov prices for US stocks were
 - Indian markets close before US markets open, so daily correlations between India and the US are understated; weekly returns would give a fairer measure.
 
 ## How to run
-Open `Beauty_Fashion_Return_Risk_Analyser_Final.ipynb` in Google Colab and choose **Runtime → Run all**.
+Open `Beauty_Fashion_Return_Risk_Analyser_v2_Final.ipynb` in Google Colab and choose **Runtime → Run all**.
 
 ## Related projects
 1. Initiating coverage report on e.l.f. Beauty (Excel: DCF, comparable companies).
